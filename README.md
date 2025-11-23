@@ -65,20 +65,21 @@ python scripts/image_extractor.py \
 | `--quality`| JPEG compression quality for extracted frames (0–3)             |
 
 
-### 3. Dataset Flattening & Labeling
+### 3. Dataset Flattening , Labeling & Rebalancing
 The raw FaceForensics++ structure is deeply nested. To facilitate efficient data loading (e.g., for PyTorch ImageFolder or custom CSV loaders), we flatten the directory structure and encode metadata directly into the filenames.
 
-The script performs two actions:
+The script performs three actions:
 
 Renames recursive videos folders to images.
 
-Aggregates all images into a single directory with a prefix-based naming convention: Label_Method_Compression_VideoID_Frame.jpg.
+Aggregates all images into a single directory with a prefix-based naming convention: Label_Method_Compression_VideoID_Frame.jpg. Also samples to create balanced real v.s. synthetic distribution
 
 Usage:
 ```
 python scripts/flatten_images.py \
     --base_dir ./data/extracted_frames \
-    --output_dir ./data/image_data_flatten
+    --output_dir ./data/image_data_flatten \
+    --balance
 ```
 
 Output Structure: The final directory ./data/image_data_flatten will contain files formatted as:
@@ -89,3 +90,5 @@ data/image_data_flatten/
     manipulated_sequences_FaceSwap_c23_001_frame_01.jpg
     manipulated_sequences_Deepfakes_c23_001_frame_03.jpg
 ```
+
+A sample of this dataset can be found in `/data/image_sample_flatten`. The full dataset of extracted frames can be found in [Google Drive](https://drive.google.com/drive/folders/1tzRkgLZoTpRiwtFWVlLgIIf_CgKUYLmU?usp=sharing)
