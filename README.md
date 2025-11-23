@@ -92,3 +92,31 @@ data/image_data_flatten/
 ```
 
 A sample of this dataset can be found in `/data/image_sample_flatten`. The full dataset of extracted frames can be found in [Google Drive](https://drive.google.com/drive/folders/1tzRkgLZoTpRiwtFWVlLgIIf_CgKUYLmU?usp=sharing)
+
+## Modelling & Experiments 
+
+The main notebook ties the whole pipeline together and runs both classical and deep learning experiments on the flattened image dataset.
+
+
+### 1. Data loading and splits
+The notebook reads a CSV of the flattened frames (path, label, method), builds a method balanced training set (real vs fake and across manipulation types), and creates stratified train, validation, and test splits.
+
+
+### 2. Handcrafted forensic features 
+For each image, the notebook loads the face centred crop and computes a compact set of forensic features (high pass filter statistics, edge density, gradient energy, LBP uniformity, DCT band ratios, JPEG blockiness, ring vs centre sharpness/brightness/chroma).
+
+
+### 3. Classical Baselines
+The feature vectors are used to train classical models such as logistic regression and tree based ensembles. We report baseline metrics (accuracy, precision, recall, F1, ROC AUC) to understand how far we can go with purely handcrafted features.
+
+### 4. Fusion CNN model in PyTorch
+A ResNet50 backbone (ImageNet pretrained) is used to extract deep image features, which are concatenated with the handcrafted feature vector and passed through a small multilayer perceptron head. The model is trained with class weighted binary cross entropy and evaluated using confusion matrix, accuracy, precision, recall, F1, and ROC AUC.
+
+
+### 5. Xception baseline in Keras
+As a comparison, the notebook also trains a pure Xception based image classifier using Keras generators on the same splits, with class weights, early stopping, and model checkpointing on validation AUC.
+
+
+### 6. Error analysis by manipulation method
+Finally, predictions are merged back with the test metadata to compute per method performance (Deepfakes, FaceSwap, Face2Face, NeuralTextures, FaceShifter, youtube), highlighting which manipulation types are easier or harder to detect and whether the models generalise beyond the training distribution.
+
